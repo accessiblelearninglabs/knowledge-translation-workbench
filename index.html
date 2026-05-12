@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Knowledge Translation Workbench — Accessible Learning Labs</title>
+  <meta name="description" content="A structured workbench for translating clinical, institutional, or technical knowledge into language that is accurate, dignified, and recognisable to the person with lived experience." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:         #ffffff;
+      --text:       #303e44;
+      --accent:     #475f6a;
+      --accent-lt:  #e8eef0;
+      --border:     #c8d4d8;
+      --muted:      #8aa4ae;
+      --radius:     4px;
+      --font-body:  'Asap', sans-serif;
+      --font-ui:    'Asap', sans-serif;
+      --max:        740px;
+
+      --acc-bg:     #eaf4ee;
+      --acc-fg:     #2e6b4f;
+      --acc-bd:     #2e6b4f;
+      --dig-bg:     #e8eef0;
+      --dig-fg:     #2a4a58;
+      --dig-bd:     #3a5568;
+      --rec-bg:     #fdf4e3;
+      --rec-fg:     #7a5c1e;
+      --rec-bd:     #7a5c1e;
+      --act-bg:     #f0eaf4;
+      --act-fg:     #4a2e6b;
+      --act-bd:     #4a2e6b;
+
+      --pass:       #2e6b4f;
+      --pass-bg:    #eaf4ee;
+      --fail:       #8b2a2a;
+      --fail-bg:    #fbeaea;
+      --partial:    #7a5c1e;
+      --partial-bg: #fdf4e3;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 1.0375rem;
+      line-height: 1.65;
+      padding: 0 1.25rem 5rem;
+    }
+
+    .wrap { max-width: var(--max); margin: 0 auto; }
+
+    /* ── Resonator ─────────────────────────────────────────── */
+    .resonator-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #res { width: 160px; height: 232px; cursor: grab; touch-action: none; display: block; }
+    #res:active { cursor: grabbing; }
+    .res-hint { margin-top: 0.75rem; font-family: var(--font-ui); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-align: center; }
+    .res-caption { margin-top: 0.4rem; font-family: var(--font-ui); font-size: 0.65rem; color: var(--border); letter-spacing: 0.1em; text-transform: uppercase; text-align: center; line-height: 2; }
+
+    /* ── Header ───────────────────────────────────────────── */
+    .site-label { font-family: var(--font-ui); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 2rem; padding-top: 0.5rem; }
+    .tool-number { font-family: var(--font-ui); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 0.6rem; }
+    h1 { font-family: var(--font-body); font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: normal; line-height: 1.2; color: var(--text); margin-bottom: 0.75rem; }
+    .intro { font-size: 0.95rem; color: var(--accent); border-left: 2px solid var(--border); padding-left: 1rem; margin: 1.25rem 0 2rem; font-style: italic; line-height: 1.7; }
+
+    /* ── How to use ───────────────────────────────────────── */
+    .how-to { background: var(--accent-lt); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; font-size: 0.92rem; line-height: 1.7; }
+    .how-to-head { font-family: var(--font-ui); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; display: block; }
+
+    /* ── Opening frame ────────────────────────────────────── */
+    .opening-frame { border-left: 3px solid var(--accent); padding: 1rem 1.25rem; margin-bottom: 2.5rem; background: var(--accent-lt); font-size: 0.95rem; font-style: italic; color: var(--accent); line-height: 1.7; border-radius: 0 var(--radius) var(--radius) 0; }
+
+    /* ── Worked example ───────────────────────────────────── */
+    .example-toggle-wrap { margin-bottom: 2.5rem; }
+    .example-toggle-btn { font-family: var(--font-ui); font-size: 0.75rem; letter-spacing: 0.06em; padding: 0.45rem 1rem; border: 1.5px solid var(--border); border-radius: 2rem; cursor: pointer; background: transparent; color: var(--accent); transition: all 0.15s; }
+    .example-toggle-btn.active, .example-toggle-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .example-toggle-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .worked-example { display: none; margin-top: 1rem; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .worked-example.visible { display: block; }
+    .example-header { background: var(--accent); color: #fff; padding: 0.75rem 1.25rem; font-family: var(--font-ui); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; }
+    .example-note { background: var(--accent-lt); border-bottom: 1px solid var(--border); padding: 0.85rem 1.25rem; font-size: 0.85rem; color: var(--accent); font-style: italic; line-height: 1.65; }
+    .example-body { padding: 1.25rem 1.5rem; font-size: 0.88rem; line-height: 1.75; color: var(--text); }
+    .example-body p + p { margin-top: 0.85rem; }
+    .example-sub { font-family: var(--font-ui); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 1.25rem 0 0.4rem; display: block; }
+    .example-sub:first-child { margin-top: 0; }
+    .example-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem; }
+    .example-cell { border-radius: var(--radius); padding: 0.85rem 1rem; font-size: 0.85rem; line-height: 1.65; }
+    .example-cell-label { font-family: var(--font-ui); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; display: block; }
+    .example-cell.source     { background: var(--fail-bg); border-left: 3px solid var(--fail); }
+    .example-cell.source     .example-cell-label { color: var(--fail); }
+    .example-cell.translated { background: var(--pass-bg); border-left: 3px solid var(--pass); }
+    .example-cell.translated .example-cell-label { color: var(--pass); }
+    .example-criteria { margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .example-criterion { border-radius: var(--radius); padding: 0.6rem 0.85rem; font-size: 0.8rem; line-height: 1.55; }
+    .example-criterion-label { font-family: var(--font-ui); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 0.2rem; }
+    .example-criterion.accuracy      { background: var(--acc-bg); border-left: 3px solid var(--acc-bd); }
+    .example-criterion.accuracy      .example-criterion-label { color: var(--acc-fg); }
+    .example-criterion.dignity       { background: var(--dig-bg); border-left: 3px solid var(--dig-bd); }
+    .example-criterion.dignity       .example-criterion-label { color: var(--dig-fg); }
+    .example-criterion.recognition   { background: var(--rec-bg); border-left: 3px solid var(--rec-bd); }
+    .example-criterion.recognition   .example-criterion-label { color: var(--rec-fg); }
+    .example-criterion.actionability { background: var(--act-bg); border-left: 3px solid var(--act-bd); }
+    .example-criterion.actionability .example-criterion-label { color: var(--act-fg); }
+
+    /* ── Progress ─────────────────────────────────────────── */
+    .progress-wrap { height: 2px; background: var(--border); border-radius: 2px; margin-bottom: 2.5rem; overflow: hidden; }
+    .progress-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
+
+    /* ── Movement ─────────────────────────────────────────── */
+    .movement { margin-bottom: 3rem; }
+    .movement-header { margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    .movement-label { font-family: var(--font-ui); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 0.3rem; }
+    .movement-title { font-family: var(--font-body); font-size: 1.35rem; font-weight: normal; color: var(--text); margin-bottom: 0.25rem; }
+    .movement-subtitle { font-family: var(--font-body); font-size: 0.9rem; font-style: italic; color: var(--accent); }
+    .movement-intro { font-size: 0.93rem; color: var(--text); line-height: 1.7; margin-bottom: 1.5rem; }
+
+    /* ── Prompt card ──────────────────────────────────────── */
+    .prompt-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 0.85rem; transition: border-color 0.2s; }
+    .prompt-card:focus-within { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; }
+    .prompt-num { font-family: var(--font-ui); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; display: block; }
+    .prompt-q { font-size: 0.95rem; line-height: 1.65; margin-bottom: 0.3rem; color: var(--text); }
+    .prompt-note { font-size: 0.83rem; font-style: italic; color: var(--accent); margin-bottom: 0.85rem; line-height: 1.6; }
+
+    /* ── Textarea ─────────────────────────────────────────── */
+    .field-label { display: block; font-family: var(--font-ui); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; margin-top: 0.75rem; }
+    textarea { width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.85rem; font-family: var(--font-body); font-size: 0.88rem; color: var(--text); background: var(--bg); resize: vertical; min-height: 72px; line-height: 1.65; transition: border-color 0.15s; }
+    textarea:focus { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--accent); }
+    textarea::placeholder { color: var(--border); }
+
+    /* ── Criterion cards ──────────────────────────────────── */
+    .criterion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 0.85rem; }
+    .criterion-card { border-radius: var(--radius); padding: 1rem 1.1rem; border-width: 1px; border-style: solid; }
+    .criterion-card.accuracy     { background: var(--acc-bg); border-color: var(--acc-bd); }
+    .criterion-card.dignity      { background: var(--dig-bg); border-color: var(--dig-bd); }
+    .criterion-card.recognition  { background: var(--rec-bg); border-color: var(--rec-bd); }
+    .criterion-card.actionability{ background: var(--act-bg); border-color: var(--act-bd); }
+    .criterion-name { font-family: var(--font-ui); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.2rem; display: block; }
+    .criterion-card.accuracy      .criterion-name { color: var(--acc-fg); }
+    .criterion-card.dignity       .criterion-name { color: var(--dig-fg); }
+    .criterion-card.recognition   .criterion-name { color: var(--rec-fg); }
+    .criterion-card.actionability .criterion-name { color: var(--act-fg); }
+    .criterion-plain { font-size: 0.88rem; font-weight: 500; line-height: 1.5; color: var(--text); margin-bottom: 0.5rem; }
+    .criterion-def { font-size: 0.8rem; line-height: 1.6; color: var(--accent); margin-bottom: 0.6rem; font-style: italic; padding-top: 0.4rem; border-top: 1px solid rgba(0,0,0,0.07); }
+
+    /* ── Verdict buttons ──────────────────────────────────── */
+    .verdict-row { display: flex; gap: 0.35rem; margin-top: 0.5rem; }
+    .verdict-btn { flex: 1; font-family: var(--font-ui); font-size: 0.72rem; padding: 0.28rem 0; border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; background: transparent; color: var(--accent); transition: all 0.15s; text-align: center; }
+    .verdict-btn:hover { border-color: var(--accent); }
+    .verdict-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .verdict-btn.selected-pass    { background: var(--pass-bg);    color: var(--pass);    border-color: var(--pass);    }
+    .verdict-btn.selected-partial { background: var(--partial-bg); color: var(--partial); border-color: var(--partial); }
+    .verdict-btn.selected-fail    { background: var(--fail-bg);    color: var(--fail);    border-color: var(--fail);    }
+    .verdict-note { margin-top: 0.5rem; font-family: var(--font-ui); font-size: 0.72rem; color: var(--muted); min-height: 1.2em; }
+    .criterion-revision { display: none; margin-top: 0.65rem; }
+    .criterion-revision.visible { display: block; }
+    .criterion-revision textarea { min-height: 56px; font-size: 0.82rem; }
+
+    /* ── Co-design card ───────────────────────────────────── */
+    .codesign-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 0.85rem; background: var(--accent-lt); }
+    .codesign-card:focus-within { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ── Pause block ──────────────────────────────────────── */
+    .pause-block { border-left: 3px solid var(--border); padding: 0.85rem 1.1rem; margin: 1.5rem 0; font-size: 0.88rem; font-style: italic; color: var(--accent); line-height: 1.65; background: var(--accent-lt); border-radius: 0 var(--radius) var(--radius) 0; }
+
+    hr { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+    /* ── Actions ──────────────────────────────────────────── */
+    .actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 2rem 0; }
+    button.btn-primary { font-family: var(--font-ui); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: var(--radius); padding: 0.65rem 1.5rem; background: var(--accent); color: #fff; border: 1.5px solid var(--accent); transition: background 0.15s, border-color 0.15s; }
+    button.btn-primary:hover { background: var(--text); border-color: var(--text); }
+    button.btn-primary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    button.btn-secondary { font-family: var(--font-ui); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: var(--radius); padding: 0.65rem 1.5rem; background: transparent; color: var(--accent); border: 1.5px solid var(--border); transition: border-color 0.15s; }
+    button.btn-secondary:hover { border-color: var(--accent); }
+    button.btn-secondary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+    /* ── Results ──────────────────────────────────────────── */
+    #results { display: none; border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; margin-top: 2rem; }
+    #results h2 { font-family: var(--font-body); font-size: 1.3rem; font-weight: normal; margin-bottom: 1.5rem; color: var(--text); }
+    .output-section { margin-bottom: 2rem; }
+    .output-label { font-family: var(--font-ui); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; display: block; }
+    .output-content { font-size: 0.9rem; line-height: 1.7; color: var(--text); white-space: pre-wrap; background: var(--accent-lt); padding: 1rem 1.25rem; border-radius: var(--radius); border-left: 3px solid var(--accent); }
+
+    .brief-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem; }
+    .brief-cell { border-radius: var(--radius); padding: 0.85rem 1rem; font-size: 0.85rem; line-height: 1.65; }
+    .brief-cell-label { font-family: var(--font-ui); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4rem; display: block; }
+    .brief-cell.source-cell      { background: var(--fail-bg);   border-left: 3px solid var(--fail); }
+    .brief-cell.source-cell      .brief-cell-label { color: var(--fail); }
+    .brief-cell.target-cell      { background: var(--acc-bg);    border-left: 3px solid var(--acc-bd); }
+    .brief-cell.target-cell      .brief-cell-label { color: var(--acc-fg); }
+    .brief-cell.translation-cell { background: var(--pass-bg);   border-left: 3px solid var(--pass); grid-column: 1 / -1; }
+    .brief-cell.translation-cell .brief-cell-label { color: var(--pass); }
+    .brief-cell.noloss-cell      { background: var(--accent-lt); border-left: 3px solid var(--accent); grid-column: 1 / -1; }
+    .brief-cell.noloss-cell      .brief-cell-label { color: var(--accent); }
+    .brief-cell.codesign-cell    { background: var(--rec-bg);    border-left: 3px solid var(--rec-bd); grid-column: 1 / -1; }
+    .brief-cell.codesign-cell    .brief-cell-label { color: var(--rec-fg); }
+
+    .criterion-summary { margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .criterion-tag { font-family: var(--font-ui); font-size: 0.68rem; letter-spacing: 0.06em; padding: 0.2rem 0.65rem; border-radius: 2rem; border: 1px solid; }
+    .criterion-tag.pass    { background: var(--pass-bg);    color: var(--pass);    border-color: var(--pass);    }
+    .criterion-tag.partial { background: var(--partial-bg); color: var(--partial); border-color: var(--partial); }
+    .criterion-tag.fail    { background: var(--fail-bg);    color: var(--fail);    border-color: var(--fail);    }
+    .criterion-tag.unrated { background: var(--accent-lt);  color: var(--muted);   border-color: var(--border);  }
+
+    /* ── Footer ───────────────────────────────────────────── */
+    .footer-note { margin-top: 3.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+    .footer-note a { color: var(--accent); }
+    .footer-note p + p { margin-top: 0.6rem; }
+
+    /* ── Skip / SR ────────────────────────────────────────── */
+    .skip-link { position: absolute; left: -9999px; top: 1rem; background: var(--accent); color: #fff; padding: 0.5rem 1rem; border-radius: var(--radius); font-family: var(--font-ui); font-size: 0.85rem; text-decoration: none; z-index: 100; }
+    .skip-link:focus { left: 1rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @media (max-width: 520px) {
+      .criterion-grid, .example-row, .example-criteria, .brief-grid { grid-template-columns: 1fr; }
+      .brief-cell.translation-cell, .brief-cell.noloss-cell, .brief-cell.codesign-cell { grid-column: 1; }
+      .actions { flex-direction: column; }
+    }
+
+    @media print {
+      .resonator-section, .actions, .example-toggle-wrap, .skip-link { display: none; }
+      #results { display: block !important; }
+      .prompt-card, .criterion-card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<div class="wrap">
+
+  <!-- ── Resonator ─────────────────────────────────────────── -->
+  <section class="resonator-section" aria-label="Rotating tuning fork — a symbol of finding the frequency at which knowledge resonates across registers">
+    <span class="sr-only">A 3D tuning fork, slowly rotating and gently vibrating at its tines. Drag to rotate. This object represents the principle that translation is not simplification: it is finding the frequency at which a truth held in one register resonates in another.</span>
+    <canvas id="res" width="320" height="464" aria-hidden="true"></canvas>
+    <p class="res-hint">Drag to rotate</p>
+    <p class="res-caption">Two registers &nbsp;·&nbsp; One truth &nbsp;·&nbsp; No loss</p>
+  </section>
+
+  <!-- ── Main ──────────────────────────────────────────────── -->
+  <div id="main-content">
+
+    <span class="site-label">Accessible Learning Labs</span>
+    <span class="tool-number">Tool 02 — Knowledge Translation Workbench</span>
+    <h1>Whose language is this concept in — and whose does it need to reach?</h1>
+
+    <p class="intro">
+      Derived from the case study <em>Decisions Made with Dignity, Not Urgency</em>. Translation is not simplification. It is finding the frequency at which a truth held in one register resonates in another — without distortion, without condescension, without loss.
+    </p>
+
+    <div class="how-to" role="note" aria-label="How to use this tool">
+      <span class="how-to-head">How to use this tool</span>
+      <p>Work through the three movements in order. Movement 1 locates the concept and the registers it must cross. Movement 2 tests a candidate translation against four criteria. Movement 3 produces a translation brief — a structured record of what was translated, how it was tested, and what must not be lost in any further adaptation. The worked example is available as a reference throughout.</p>
+    </div>
+
+    <!-- ── Worked example ─────────────────────────────────── -->
+    <div class="example-toggle-wrap">
+      <button class="example-toggle-btn" id="example-btn" aria-expanded="false" aria-controls="worked-example">Show worked example</button>
+
+      <div class="worked-example" id="worked-example" role="note" aria-label="Worked example from the case study">
+        <div class="example-header">Worked example — from the case study</div>
+        <div class="example-note">
+          This example involves dementia, grief, and the experience of watching someone you love change. If you are navigating this yourself, or have recently, you may find it resonant in ways that are not only professional. Take it at the pace that works for you.
+        </div>
+        <div class="example-body">
+          <span class="example-sub">What the person is living</span>
+          <p>A family member living with dementia calls their daughter by a deceased grandmother's name. The daughter experiences this as painful — as evidence that her mother no longer knows who she is. This interpretation is common, and it closes something down in the relationship.</p>
+
+          <span class="example-sub">Where the knowledge currently lives — the clinical register</span>
+          <p>The clinical framing describes this as confabulation: a failure of episodic memory producing incorrect name retrieval. This framing is accurate within its register. But when it crosses into the family's experience without translation, it confirms the loss the daughter fears — and offers nothing to hold onto.</p>
+
+          <span class="example-sub">The translation — produced within the community</span>
+          <p>This reframe did not come from the facilitator or from clinical literature. It came from the community itself, in conversation. The language belongs to the people who lived it.</p>
+
+          <div class="example-row">
+            <div class="example-cell source">
+              <span class="example-cell-label">Clinical register — what it says</span>
+              The person cannot retrieve the correct name and substitutes an earlier memory association. This is a symptom of episodic memory loss.
+            </div>
+            <div class="example-cell translated">
+              <span class="example-cell-label">Translation — what the community found</span>
+              The person is reaching for the closest approximation to a feeling of warmth and trust, and finding it in an earlier memory. To be called by that name is not to be forgotten. It is to be trusted.
+            </div>
+          </div>
+
+          <span class="example-sub">How the translation meets the four criteria</span>
+          <div class="example-criteria">
+            <div class="example-criterion accuracy">
+              <span class="example-criterion-label">Accuracy</span>
+              The neurological mechanism is preserved — the translation does not deny the memory loss. It reframes what the mechanism means in relational terms.
+            </div>
+            <div class="example-criterion dignity">
+              <span class="example-criterion-label">Dignity</span>
+              The person living with dementia is described as reaching toward connection, not failing at recognition. The daughter is described as trusted, not forgotten.
+            </div>
+            <div class="example-criterion recognition">
+              <span class="example-criterion-label">Recognition</span>
+              Participants confirmed this framing as true to their experience. It came from the community; the facilitator's role was to hold the space in which it emerged.
+            </div>
+            <div class="example-criterion actionability">
+              <span class="example-criterion-label">Actionability</span>
+              The translation opens what was closed. A daughter who understands this differently can respond differently — and that changes what is possible in the relationship.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="opening-frame" role="note">
+      This tool works best when you approach it as an act of genuine attention — to the concept, to the registers involved, and to the people whose lives it touches. A translation that is technically accurate but dignity-eroding is not a translation. It is a different kind of distortion. The most durable translations emerge from within the community, not from above it. Work slowly. The quality of the output depends entirely on the quality of the attention brought to it.
+    </div>
+
+    <div class="progress-wrap" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Workbench completion" id="prog-wrap">
+      <div class="progress-bar" id="prog-bar"></div>
+    </div>
+
+    <form id="workbench-form" novalidate>
+
+      <!-- ══ MOVEMENT 1 ══════════════════════════════════════ -->
+      <div class="movement" id="m1">
+        <div class="movement-header">
+          <span class="movement-label">Movement 1</span>
+          <div class="movement-title">Locate the concept</div>
+          <div class="movement-subtitle">Whose knowledge is this, and whose does it need to reach?</div>
+        </div>
+        <p class="movement-intro">The goal of this movement is to be explicit about where the concept currently lives — whose language it is in, how it got there, and what happens to people when it crosses into their lives without translation. A concept has a history. Understanding that history is the first act of translation.</p>
+
+        <div class="prompt-card">
+          <span class="prompt-num">1.1 &nbsp;·&nbsp; The source concept</span>
+          <p class="prompt-q">State the concept you are working with, in its current form — the language it arrives in. Do not edit or improve it yet. Record it as it stands: the term, the definition, the framing currently in use.</p>
+          <p class="prompt-note">If it helps, write it as a direct quote from the source material — clinical documentation, policy language, institutional guidance, training content.</p>
+          <label class="field-label" for="r1-1">The concept as it currently exists</label>
+          <textarea id="r1-1" name="r1-1" placeholder="Write it down exactly as it comes, without editing…" rows="3"></textarea>
+        </div>
+
+        <div class="prompt-card">
+          <span class="prompt-num">1.2 &nbsp;·&nbsp; The source register</span>
+          <p class="prompt-q">Whose register is this concept currently in? Name it specifically — clinical, legal, bureaucratic, academic, institutional, policy, professional. Who produced this language, and who is assumed to be reading it?</p>
+          <label class="field-label" for="r1-2">Response</label>
+          <textarea id="r1-2" name="r1-2" placeholder="Write as specifically as you can…" rows="3"></textarea>
+        </div>
+
+        <div class="prompt-card">
+          <span class="prompt-num">1.3 &nbsp;·&nbsp; The target register</span>
+          <p class="prompt-q">Whose register does this concept need to reach? Describe the person — not a demographic profile, but a person in a moment. What are they dealing with? What do they already understand? What relationship do they have to this concept — is it something happening to them, to someone they love, to their community?</p>
+          <p class="prompt-note">The target register is not simply "plain language." It may be the register of grief, of care, of practical action, of community knowledge. Name it with the same specificity you brought to 1.2.</p>
+          <label class="field-label" for="r1-3">Response</label>
+          <textarea id="r1-3" name="r1-3" placeholder="Write as specifically as you can…" rows="4"></textarea>
+        </div>
+
+        <div class="prompt-card">
+          <span class="prompt-num">1.4 &nbsp;·&nbsp; What the crossing costs</span>
+          <p class="prompt-q">What happens when this concept crosses from its source register into the lives of the people who need it — without translation? What is understood incorrectly? What is experienced as a closing rather than an opening? What does the person lose access to as a result?</p>
+          <p class="prompt-note">Be concrete. Vague descriptions of harm produce vague translations.</p>
+          <label class="field-label" for="r1-4">Response</label>
+          <textarea id="r1-4" name="r1-4" placeholder="Write as specifically as you can…" rows="3"></textarea>
+        </div>
+
+        <div class="prompt-card">
+          <span class="prompt-num">1.5 &nbsp;·&nbsp; What must not be lost</span>
+          <p class="prompt-q">What is the irreducible truth in this concept — the thing that must survive the translation intact, even if everything else changes? Name it plainly. This becomes the standard against which any translation you produce will be tested.</p>
+          <label class="field-label" for="r1-5">Response</label>
+          <textarea id="r1-5" name="r1-5" placeholder="State it as precisely as you can…" rows="3"></textarea>
+        </div>
+
+        <div class="pause-block" role="note">
+          Pause here. Read 1.4 and 1.5 together. The gap between what the untranslated concept costs and what the irreducible truth is — that gap is what your translation must bridge. Keep both in view as you move into Movement 2.
+        </div>
+      </div>
+
+      <hr />
+
+      <!-- ══ MOVEMENT 2 ══════════════════════════════════════ -->
+      <div class="movement" id="m2">
+        <div class="movement-header">
+          <span class="movement-label">Movement 2</span>
+          <div class="movement-title">Test the translation</div>
+          <div class="movement-subtitle">Does this framing hold up to what it must do?</div>
+        </div>
+        <p class="movement-intro">Produce a candidate translation, then test it against four criteria. A translation that meets fewer than all four is not a finished translation — it is a draft with known problems. The criteria are not a hierarchy; each must be met. Use the revision field within each criterion to note what needs to change before you move forward.</p>
+
+        <div class="prompt-card">
+          <span class="prompt-num">2.1 &nbsp;·&nbsp; Candidate translation</span>
+          <p class="prompt-q">Write your first attempt at a translation. Express the concept in the target register you named in 1.3 — grounded in the felt experience, the practical situation, or the relational context of the person who needs it. Do not simplify. Translate.</p>
+          <p class="prompt-note">Aim for language that could have come from within the community itself — not language delivered to them, but language that reflects what they already know and name.</p>
+          <label class="field-label" for="r2-1">Candidate translation</label>
+          <textarea id="r2-1" name="r2-1" placeholder="Write your translation here…" rows="5"></textarea>
+        </div>
+
+        <div class="pause-block" role="note">
+          Before testing: read your candidate translation alongside what you wrote in 1.5 — what must not be lost. If the translation does not preserve that truth, revise it before testing the criteria. A translation that replaces the irreducible truth rather than carrying it is not a candidate — it is a different kind of distortion.
+        </div>
+
+        <p class="movement-intro" style="margin-top:0;">Test the candidate against each of the four criteria. Mark whether it passes, partially passes, or fails — and note what revision is needed where it does not fully pass.</p>
+
+        <div class="criterion-grid">
+
+          <div class="criterion-card accuracy">
+            <span class="criterion-name">Accuracy</span>
+            <p class="criterion-plain">Does the translation remain true?</p>
+            <p class="criterion-def">It preserves the factual and conceptual content of the source — not by reproducing the source register, but by carrying the same truth in different language. Nothing essential is omitted or softened.</p>
+            <div class="verdict-row" role="group" aria-label="Accuracy verdict">
+              <button type="button" class="verdict-btn" data-crit="accuracy" data-val="pass" aria-pressed="false">Passes</button>
+              <button type="button" class="verdict-btn" data-crit="accuracy" data-val="partial" aria-pressed="false">Partial</button>
+              <button type="button" class="verdict-btn" data-crit="accuracy" data-val="fail" aria-pressed="false">Fails</button>
+            </div>
+            <div class="verdict-note" id="vn-accuracy" aria-live="polite"></div>
+            <div class="criterion-revision" id="cr-accuracy">
+              <label class="field-label" for="rev-accuracy">What revision is required?</label>
+              <textarea id="rev-accuracy" name="rev-accuracy" placeholder="Describe the specific change needed…" rows="2"></textarea>
+            </div>
+          </div>
+
+          <div class="criterion-card dignity">
+            <span class="criterion-name">Dignity</span>
+            <p class="criterion-plain">Does the translation honour the person it describes?</p>
+            <p class="criterion-def">It treats the person's experience, capacity, and knowledge as worthy of respect — without euphemism, without condescension, without reduction. It does not explain the person to themselves.</p>
+            <div class="verdict-row" role="group" aria-label="Dignity verdict">
+              <button type="button" class="verdict-btn" data-crit="dignity" data-val="pass" aria-pressed="false">Passes</button>
+              <button type="button" class="verdict-btn" data-crit="dignity" data-val="partial" aria-pressed="false">Partial</button>
+              <button type="button" class="verdict-btn" data-crit="dignity" data-val="fail" aria-pressed="false">Fails</button>
+            </div>
+            <div class="verdict-note" id="vn-dignity" aria-live="polite"></div>
+            <div class="criterion-revision" id="cr-dignity">
+              <label class="field-label" for="rev-dignity">What revision is required?</label>
+              <textarea id="rev-dignity" name="rev-dignity" placeholder="Describe the specific change needed…" rows="2"></textarea>
+            </div>
+          </div>
+
+          <div class="criterion-card recognition">
+            <span class="criterion-name">Recognition</span>
+            <p class="criterion-plain">Would a person with lived experience see themselves in this?</p>
+            <p class="criterion-def">Not as a subject described, but as someone whose experience is understood. They would recognise this as true to what they know — not because it was explained to them, but because it came from the same place they live.</p>
+            <div class="verdict-row" role="group" aria-label="Recognition verdict">
+              <button type="button" class="verdict-btn" data-crit="recognition" data-val="pass" aria-pressed="false">Passes</button>
+              <button type="button" class="verdict-btn" data-crit="recognition" data-val="partial" aria-pressed="false">Partial</button>
+              <button type="button" class="verdict-btn" data-crit="recognition" data-val="fail" aria-pressed="false">Fails</button>
+            </div>
+            <div class="verdict-note" id="vn-recognition" aria-live="polite"></div>
+            <div class="criterion-revision" id="cr-recognition">
+              <label class="field-label" for="rev-recognition">What revision is required?</label>
+              <textarea id="rev-recognition" name="rev-recognition" placeholder="Describe the specific change needed…" rows="2"></textarea>
+            </div>
+          </div>
+
+          <div class="criterion-card actionability">
+            <span class="criterion-name">Actionability</span>
+            <p class="criterion-plain">Does the translation open rather than close what is possible?</p>
+            <p class="criterion-def">It gives the person access to knowledge they can act on — in their relationships, their decisions, their understanding of what is happening. It creates room for something to be different, rather than confirming that nothing can change.</p>
+            <div class="verdict-row" role="group" aria-label="Actionability verdict">
+              <button type="button" class="verdict-btn" data-crit="actionability" data-val="pass" aria-pressed="false">Passes</button>
+              <button type="button" class="verdict-btn" data-crit="actionability" data-val="partial" aria-pressed="false">Partial</button>
+              <button type="button" class="verdict-btn" data-crit="actionability" data-val="fail" aria-pressed="false">Fails</button>
+            </div>
+            <div class="verdict-note" id="vn-actionability" aria-live="polite"></div>
+            <div class="criterion-revision" id="cr-actionability">
+              <label class="field-label" for="rev-actionability">What revision is required?</label>
+              <textarea id="rev-actionability" name="rev-actionability" placeholder="Describe the specific change needed…" rows="2"></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="codesign-card">
+          <span class="prompt-num">2.2 &nbsp;·&nbsp; Who was in the room</span>
+          <p class="prompt-q">Where did this translation come from? Name, as specifically as you can, who was involved in producing it. Were people with lived experience of this concept present — as participants, as collaborators, as the source of the language itself? Or was it produced by the facilitator or designer working from the outside?</p>
+          <p class="prompt-note">The most durable translations emerge from within the community, not from above it. A translation produced without that input remains a hypothesis until it is tested with the people it is meant to serve. This is not a critique — it is an honest account of the translation's origin that determines how it should be held and how openly it should be offered for revision.</p>
+          <label class="field-label" for="r2-2">Response</label>
+          <textarea id="r2-2" name="r2-2" placeholder="Name who was present and in what role…" rows="3"></textarea>
+        </div>
+
+        <div class="prompt-card">
+          <span class="prompt-num">2.3 &nbsp;·&nbsp; Revised translation</span>
+          <p class="prompt-q">Having worked through the four criteria, write the revised translation. If the candidate passed all four without revision, write it again here as the confirmed translation. If revisions were required, incorporate them now.</p>
+          <label class="field-label" for="r2-3">Revised translation</label>
+          <textarea id="r2-3" name="r2-3" placeholder="Write the revised or confirmed translation here…" rows="5"></textarea>
+        </div>
+      </div>
+
+      <hr />
+
+      <!-- ══ MOVEMENT 3 ══════════════════════════════════════ -->
+      <div class="movement" id="m3">
+        <div class="movement-header">
+          <span class="movement-label">Movement 3</span>
+          <div class="movement-title">Build the translation brief</div>
+          <div class="movement-subtitle">A structured record for further use and adaptation.</div>
+        </div>
+        <p class="movement-intro">The translation brief is the output of this workbench. It records what was translated, how it was tested, and what constraints must hold in any further adaptation. A translation brief is not a final text — it is a documented act of care that makes the work of others more reliable and more honest about its origins.</p>
+
+        <div class="prompt-card">
+          <span class="prompt-num">3.1 &nbsp;·&nbsp; Constraints on further adaptation</span>
+          <p class="prompt-q">This translation will be used by others — in different sessions, different contexts, different languages. What must any future adaptation preserve? State the constraints plainly: what can change, and what cannot, without the translation losing its integrity or misrepresenting its origins.</p>
+          <label class="field-label" for="r3-1">Response</label>
+          <textarea id="r3-1" name="r3-1" placeholder="Write as specifically as you can…" rows="3"></textarea>
+        </div>
+
+        <div class="prompt-card">
+          <span class="prompt-num">3.2 &nbsp;·&nbsp; What remains to be tested</span>
+          <p class="prompt-q">Testing in the workbench is not the same as testing in the room. What would you need to observe or hear from people with lived experience to be confident this translation is doing what it is meant to do? What would tell you it needs revision?</p>
+          <label class="field-label" for="r3-2">Response</label>
+          <textarea id="r3-2" name="r3-2" placeholder="Write as specifically as you can…" rows="3"></textarea>
+        </div>
+
+        <div class="prompt-card">
+          <span class="prompt-num">3.3 &nbsp;·&nbsp; The facilitator's role in this translation</span>
+          <p class="prompt-q">The best facilitation leaves no trace of the facilitator. In this translation, how visible is your own hand? Where did you shape the language, and where did you step back to let the community's language lead? Name this honestly — it matters for how the translation is attributed and how confidently it should be offered for further use.</p>
+          <label class="field-label" for="r3-3">Response</label>
+          <textarea id="r3-3" name="r3-3" placeholder="Write as specifically as you can…" rows="3"></textarea>
+        </div>
+
+        <div class="pause-block" role="note">
+          The translation brief you are about to generate belongs to the people whose knowledge produced it. If it came from within the community, that origin should be named in any context where it is shared. If it came from the facilitator, that too should be named — and held with appropriate tentativeness until the community has had the opportunity to confirm or revise it.
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-primary" id="generate-btn" aria-controls="results">Generate translation brief</button>
+        <button type="button" class="btn-secondary" id="reset-btn">Start over</button>
+        <button type="button" class="btn-secondary" id="print-btn">Print / save as PDF</button>
+      </div>
+
+    </form>
+
+    <!-- ── Results ──────────────────────────────────────────── -->
+    <section id="results" aria-live="polite" aria-label="Translation brief" tabindex="-1">
+      <h2>Translation brief</h2>
+
+      <div class="output-section">
+        <span class="output-label">The translation</span>
+        <div class="brief-grid" id="out-brief"></div>
+      </div>
+
+      <div class="output-section">
+        <span class="output-label">Criteria met</span>
+        <div class="criterion-summary" id="out-criteria" role="list"></div>
+      </div>
+
+      <div class="output-section">
+        <span class="output-label">Who was in the room</span>
+        <div class="output-content" id="out-codesign"></div>
+      </div>
+
+      <div class="output-section">
+        <span class="output-label">Constraints on further adaptation</span>
+        <div class="output-content" id="out-constraints"></div>
+      </div>
+
+      <div class="output-section">
+        <span class="output-label">What remains to be tested</span>
+        <div class="output-content" id="out-remaining"></div>
+      </div>
+
+      <div class="output-section">
+        <span class="output-label">The facilitator's role</span>
+        <div class="output-content" id="out-role"></div>
+      </div>
+
+      <div class="pause-block" role="note" style="margin-top:1.5rem;">
+        This brief is an instrument, not a deliverable. Bring it into the room. Test it. Let it be revised by the people whose knowledge it carries. A translation that cannot survive contact with lived experience is not yet finished.
+      </div>
+    </section>
+
+    <div class="footer-note" role="contentinfo">
+      <p>This tool was derived from the case study <a href="https://www.accessiblelearninglabs.com/decisions-made-with-dignity-not-urgency" target="_blank" rel="noopener"><em>Decisions Made with Dignity, Not Urgency</em></a> — a community health program supporting families, carers, and people living with dementia through peer-supported, multilingual community learning.</p>
+      <p>Grounded in: plain language knowledge translation; trauma-informed facilitation; co-design and community-based learning (Lave and Wenger, 1991); Cook-Sather, Bovill and Felten on partnership in higher education; UNESCO IESALC students as partners methodology; Universal Design for Learning (CAST); Freire (1970) on knowledge and community.</p>
+      <p>Designed and built by <a href="https://www.accessiblelearninglabs.com" target="_blank" rel="noopener">Accessible Learning Labs</a>. <a href="https://accessiblelearninglabs.github.io/assumption-audit/" target="_blank" rel="noopener">Tool 01 — Assumption Audit</a> is also available.</p>
+      <p><strong>Accessibility note:</strong> This tool is fully keyboard navigable, uses semantic HTML with ARIA labels throughout, meets WCAG 2.1 AA colour contrast requirements, and conveys no information through colour alone. If you encounter a barrier, please <a href="https://www.accessiblelearninglabs.com/contact" target="_blank" rel="noopener">get in touch</a>.</p>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /wrap -->
+
+<!-- ── Tuning Fork 3D ────────────────────────────────────────────── -->
+<script>
+(function(){
+  const canvas = document.getElementById('res');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 320, H = 464, CX = W / 2, CY = H / 2;
+
+  const dark  = '#1e2e35';
+  const base  = '#303e44';
+  const mid   = '#475f6a';
+  const lite  = '#6a8a96';
+  const hilit = '#8fb4c0';
+  const glow  = '#7ecfdb';
+
+  let rotX = 0.18, rotY = -0.15, dragging = false, lastX = 0, lastY = 0, animT = 0;
+
+  // ── Projection ──────────────────────────────────────────────────
+  function proj(x, y, z) {
+    const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+    const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+    const x1 = x * cosY + z * sinY;
+    const z1 = -x * sinY + z * cosY;
+    const y2 = y * cosX - z1 * sinX;
+    const z2 = y * sinX + z1 * cosX;
+    const f = 700 / (700 + z2);
+    return { x: CX + x1 * f, y: CY + y2 * f, z: z2 };
+  }
+
+  // ── Geometry helpers ─────────────────────────────────────────────
+  // Tube cross-section: returns 4 corner points of a rectangular cross-section
+  // at position (cx,cy,cz) oriented along axis, with half-widths hw, hd
+  function tubeFace(cx, cy, cz, hw, hd) {
+    return [
+      proj(cx - hw, cy, cz - hd),
+      proj(cx + hw, cy, cz - hd),
+      proj(cx + hw, cy, cz + hd),
+      proj(cx - hw, cy, cz + hd),
+    ];
+  }
+
+  function fillPoly(pts, fill, strokeCol, lw) {
+    if (pts.length < 2) return;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.closePath();
+    if (fill)      { ctx.fillStyle = fill; ctx.fill(); }
+    if (strokeCol) { ctx.strokeStyle = strokeCol; ctx.lineWidth = lw || 1; ctx.stroke(); }
+  }
+
+  function avgZ(pts) { return pts.reduce((s, p) => s + p.z, 0) / pts.length; }
+
+  // ── Build tuning fork faces ──────────────────────────────────────
+  // Coordinate system: Y = up, fork standing vertically
+  // Handle at bottom, stem going up, tines forking upward
+
+  function buildFork(vib) {
+    // vib: vibration offset for tine tips (oscillates ±vib)
+    const faces = [];
+
+    // ── Handle (octagonal-ish cylinder via 8-sided prism) ──────────
+    // Tapered round handle: from y=-130 to y=-60
+    const hBot = -130, hTop = -60;
+    const hSegs = 8;
+    const hRad = (t) => 6 + 3 * Math.sin(t * Math.PI); // slight taper / bulge
+
+    for (let i = 0; i < hSegs; i++) {
+      const a0 = (i / hSegs) * Math.PI * 2;
+      const a1 = ((i + 1) / hSegs) * Math.PI * 2;
+      // side face
+      const tBot = 0, tTop = 1;
+      const rB0 = hRad(tBot), rB1 = hRad(tTop);
+      const pts = [
+        proj(Math.cos(a0) * rB0, hBot, Math.sin(a0) * rB0),
+        proj(Math.cos(a1) * rB0, hBot, Math.sin(a1) * rB0),
+        proj(Math.cos(a1) * rB1, hTop, Math.sin(a1) * rB1),
+        proj(Math.cos(a0) * rB1, hTop, Math.sin(a0) * rB1),
+      ];
+      const nx = Math.cos((a0 + a1) / 2); // approximate normal x
+      const lightFactor = 0.4 + 0.6 * Math.max(0, nx);
+      const shade = `rgba(71,95,106,${lightFactor.toFixed(2)})`;
+      faces.push({ pts, fill: shade, stroke: dark, lw: 0.5, z: avgZ(pts) });
+    }
+
+    // Handle knob base cap (bottom)
+    {
+      const pts = [];
+      for (let i = 0; i < hSegs; i++) {
+        const a = (i / hSegs) * Math.PI * 2;
+        pts.push(proj(Math.cos(a) * hRad(0), hBot, Math.sin(a) * hRad(0)));
+      }
+      faces.push({ pts, fill: base, stroke: dark, lw: 0.5, z: avgZ(pts) });
+    }
+
+    // ── Stem (rectangular, from y=-60 to y=20) ─────────────────────
+    const stemBot = -60, stemTop = 20;
+    const sW = 5, sD = 4; // half-widths
+
+    // Front face
+    faces.push({
+      pts: [proj(-sW, stemBot, -sD), proj(sW, stemBot, -sD), proj(sW, stemTop, -sD), proj(-sW, stemTop, -sD)],
+      fill: mid, stroke: dark, lw: 0.5,
+      z: avgZ([proj(-sW, stemBot, -sD), proj(sW, stemTop, -sD)])
+    });
+    // Back face
+    faces.push({
+      pts: [proj(-sW, stemBot, sD), proj(sW, stemBot, sD), proj(sW, stemTop, sD), proj(-sW, stemTop, sD)],
+      fill: base, stroke: dark, lw: 0.5,
+      z: avgZ([proj(-sW, stemBot, sD), proj(sW, stemTop, sD)])
+    });
+    // Left face
+    faces.push({
+      pts: [proj(-sW, stemBot, -sD), proj(-sW, stemBot, sD), proj(-sW, stemTop, sD), proj(-sW, stemTop, -sD)],
+      fill: lite, stroke: dark, lw: 0.5,
+      z: avgZ([proj(-sW, stemBot, -sD), proj(-sW, stemTop, sD)])
+    });
+    // Right face
+    faces.push({
+      pts: [proj(sW, stemBot, -sD), proj(sW, stemBot, sD), proj(sW, stemTop, sD), proj(sW, stemTop, -sD)],
+      fill: base, stroke: dark, lw: 0.5,
+      z: avgZ([proj(sW, stemBot, -sD), proj(sW, stemTop, sD)])
+    });
+
+    // ── Yoke / bridge connecting stem to tines (y=20 to y=55) ──────
+    // Widens from sW to tine spacing
+    const yokeBot = 20, yokeTop = 55;
+    const tineSpacing = 22; // x-center of each tine
+    const tW = 5, tD = 4;   // tine half-widths
+
+    // Left yoke side
+    {
+      const p = [
+        proj(-sW, yokeBot, -sD), proj(0, yokeBot, -sD),
+        proj(-(tineSpacing), yokeTop, -tD), proj(-(tineSpacing + tW), yokeTop, -tD)
+      ];
+      faces.push({ pts: p, fill: mid, stroke: dark, lw: 0.5, z: avgZ(p) });
+    }
+    {
+      const p = [
+        proj(-sW, yokeBot, sD), proj(0, yokeBot, sD),
+        proj(-(tineSpacing), yokeTop, tD), proj(-(tineSpacing + tW), yokeTop, tD)
+      ];
+      faces.push({ pts: p, fill: base, stroke: dark, lw: 0.5, z: avgZ(p) });
+    }
+
+    // Right yoke side
+    {
+      const p = [
+        proj(sW, yokeBot, -sD), proj(0, yokeBot, -sD),
+        proj(tineSpacing, yokeTop, -tD), proj(tineSpacing + tW, yokeTop, -tD)
+      ];
+      faces.push({ pts: p, fill: mid, stroke: dark, lw: 0.5, z: avgZ(p) });
+    }
+    {
+      const p = [
+        proj(sW, yokeBot, sD), proj(0, yokeBot, sD),
+        proj(tineSpacing, yokeTop, tD), proj(tineSpacing + tW, yokeTop, tD)
+      ];
+      faces.push({ pts: p, fill: base, stroke: dark, lw: 0.5, z: avgZ(p) });
+    }
+
+    // Yoke front face
+    {
+      const p = [
+        proj(-sW, yokeBot, -sD), proj(sW, yokeBot, -sD),
+        proj(tineSpacing + tW, yokeTop, -tD), proj(-(tineSpacing + tW), yokeTop, -tD)
+      ];
+      faces.push({ pts: p, fill: lite, stroke: dark, lw: 0.5, z: avgZ(p) });
+    }
+
+    // ── Tines ───────────────────────────────────────────────────────
+    // Two tines from y=55 upward to y=130 (tips), vibrating in X
+    const tineBot = 55, tineHeight = 90;
+    const tines = [
+      { cx: -(tineSpacing), vdir: -1 },  // left tine vibrates left
+      { cx:  tineSpacing,   vdir:  1 },  // right tine vibrates right
+    ];
+
+    tines.forEach(({ cx, vdir }) => {
+      const numSeg = 16;
+      for (let i = 0; i < numSeg; i++) {
+        const t0 = i / numSeg, t1 = (i + 1) / numSeg;
+        const y0 = tineBot + t0 * tineHeight;
+        const y1 = tineBot + t1 * tineHeight;
+        // Vibration increases toward tip (quadratic envelope)
+        const v0 = vib * vdir * t0 * t0;
+        const v1 = vib * vdir * t1 * t1;
+        const x0 = cx + v0, x1 = cx + v1;
+
+        const isFront = (vdir > 0) ? false : true;
+
+        // Front face (z = -tD)
+        const front = [
+          proj(x0 - tW, y0, -tD), proj(x0 + tW, y0, -tD),
+          proj(x1 + tW, y1, -tD), proj(x1 - tW, y1, -tD)
+        ];
+        faces.push({ pts: front, fill: lite, stroke: dark, lw: 0.5, z: avgZ(front) });
+
+        // Back face (z = +tD)
+        const back = [
+          proj(x0 - tW, y0, tD), proj(x0 + tW, y0, tD),
+          proj(x1 + tW, y1, tD), proj(x1 - tW, y1, tD)
+        ];
+        faces.push({ pts: back, fill: base, stroke: dark, lw: 0.4, z: avgZ(back) });
+
+        // Outer side face (away from centre)
+        const outerX = (cx > 0) ? x0 + tW : x0 - tW;
+        const outerX1 = (cx > 0) ? x1 + tW : x1 - tW;
+        const outer = [
+          proj(outerX, y0, -tD), proj(outerX, y0, tD),
+          proj(outerX1, y1, tD), proj(outerX1, y1, -tD)
+        ];
+        faces.push({ pts: outer, fill: mid, stroke: dark, lw: 0.4, z: avgZ(outer) });
+
+        // Inner side face (toward centre)
+        const innerX = (cx > 0) ? x0 - tW : x0 + tW;
+        const innerX1 = (cx > 0) ? x1 - tW : x1 + tW;
+        const inner = [
+          proj(innerX, y0, -tD), proj(innerX, y0, tD),
+          proj(innerX1, y1, tD), proj(innerX1, y1, -tD)
+        ];
+        faces.push({ pts: inner, fill: base, stroke: dark, lw: 0.4, z: avgZ(inner) });
+      }
+
+      // Rounded tip cap
+      const tipY = tineBot + tineHeight;
+      const tipVib = vib * vdir;
+      const tipX = cx + tipVib;
+      const tipSegs = 8;
+      for (let i = 0; i < tipSegs; i++) {
+        const a0 = (i / tipSegs) * Math.PI;       // semicircle on top
+        const a1 = ((i + 1) / tipSegs) * Math.PI;
+        const p = [
+          proj(tipX + Math.cos(a0) * tW, tipY + Math.sin(a0) * tW, -tD),
+          proj(tipX + Math.cos(a1) * tW, tipY + Math.sin(a1) * tW, -tD),
+          proj(tipX + Math.cos(a1) * tW, tipY + Math.sin(a1) * tW,  tD),
+          proj(tipX + Math.cos(a0) * tW, tipY + Math.sin(a0) * tW,  tD),
+        ];
+        const bright = 0.4 + 0.5 * Math.cos(a0 + a1 / 2);
+        faces.push({ pts: p, fill: bright > 0.6 ? hilit : mid, stroke: dark, lw: 0.4, z: avgZ(p) });
+      }
+
+      // Glow dot at tip
+      const tipP = proj(tipX, tipY + tW, -tD - 1);
+      faces.push({ type: 'glow', pt: tipP, r: 3 + Math.abs(tipVib) * 0.3, z: tipP.z });
+    });
+
+    return faces;
+  }
+
+  // ── Draw ─────────────────────────────────────────────────────────
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    animT += 0.018;
+
+    // Vibration: gentle sine, slowing at extremes like a real fork
+    const vib = 9 * Math.sin(animT * 3.2) * Math.exp(-0.0008 * (animT % (Math.PI * 2 / 0.0008)));
+    // Reset envelope periodically so it never fully damps out
+    const vibCycle = animT % (Math.PI * 4 / 3.2);
+    const env = Math.max(0.12, Math.abs(Math.sin(animT * 0.4)));
+    const vibration = 9 * Math.sin(animT * 3.2) * env;
+
+    const faces = buildFork(vibration);
+
+    // Painter's sort back to front
+    faces.sort((a, b) => a.z - b.z);
+
+    faces.forEach(f => {
+      if (f.type === 'glow') {
+        ctx.save();
+        ctx.globalAlpha = 0.35 * env;
+        ctx.beginPath();
+        ctx.arc(f.pt.x, f.pt.y, f.r * 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.fill();
+        ctx.restore();
+        ctx.beginPath();
+        ctx.arc(f.pt.x, f.pt.y, f.r, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.fill();
+      } else {
+        fillPoly(f.pts, f.fill, f.stroke, f.lw);
+      }
+    });
+
+    if (!dragging) rotY += 0.004;
+    requestAnimationFrame(draw);
+  }
+
+  function getPos(e) { return e.touches ? e.touches[0] : e; }
+  canvas.addEventListener('mousedown', e => { dragging = true; const p = getPos(e); lastX = p.clientX; lastY = p.clientY; });
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); dragging = true; const p = getPos(e); lastX = p.clientX; lastY = p.clientY; }, { passive: false });
+  window.addEventListener('mousemove', e => { if (!dragging) return; const p = getPos(e); rotY += (p.clientX - lastX) * 0.013; rotX += (p.clientY - lastY) * 0.013; rotX = Math.max(-1.3, Math.min(1.3, rotX)); lastX = p.clientX; lastY = p.clientY; });
+  window.addEventListener('touchmove', e => { if (!dragging) return; e.preventDefault(); const p = getPos(e); rotY += (p.clientX - lastX) * 0.013; rotX += (p.clientY - lastY) * 0.013; rotX = Math.max(-1.3, Math.min(1.3, rotX)); lastX = p.clientX; lastY = p.clientY; }, { passive: false });
+  window.addEventListener('mouseup', () => { dragging = false; });
+  window.addEventListener('touchend', () => { dragging = false; });
+  draw();
+})();
+</script>
+
+<!-- ── Workbench logic ──────────────────────────────────────────── -->
+<script>
+(function(){
+  const textareas=document.querySelectorAll('textarea');
+  const TOTAL=textareas.length;
+
+  function updateProgress(){
+    const filled=Array.from(textareas).filter(t=>t.value.trim().length>0).length;
+    const pct=Math.round((filled/TOTAL)*100);
+    document.getElementById('prog-bar').style.width=pct+'%';
+    document.getElementById('prog-wrap').setAttribute('aria-valuenow',pct);
+  }
+  textareas.forEach(t=>t.addEventListener('input',updateProgress));
+
+  // Worked example toggle
+  const exBtn=document.getElementById('example-btn');
+  const exBox=document.getElementById('worked-example');
+  exBtn.addEventListener('click',()=>{
+    const open=exBox.classList.toggle('visible');
+    exBtn.classList.toggle('active',open);
+    exBtn.setAttribute('aria-expanded',open?'true':'false');
+    exBtn.textContent=open?'Hide worked example':'Show worked example';
+  });
+
+  // Verdict buttons
+  const verdicts={accuracy:null,dignity:null,recognition:null,actionability:null};
+  const crits=['accuracy','dignity','recognition','actionability'];
+  const msgs={pass:'This criterion is met.',partial:'Partially met — note the revision required below.',fail:'Not yet met — revise before finalising the translation.'};
+
+  document.querySelectorAll('.verdict-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const crit=btn.dataset.crit, val=btn.dataset.val;
+      document.querySelectorAll(`.verdict-btn[data-crit="${crit}"]`).forEach(b=>{b.className='verdict-btn';b.setAttribute('aria-pressed','false');});
+      btn.classList.add('selected-'+val);
+      btn.setAttribute('aria-pressed','true');
+      verdicts[crit]=val;
+      const noteEl=document.getElementById('vn-'+crit);
+      if(noteEl) noteEl.textContent=msgs[val]||'';
+      const revEl=document.getElementById('cr-'+crit);
+      if(revEl) revEl.classList.toggle('visible',val==='partial'||val==='fail');
+    });
+    btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();btn.click();}});
+  });
+
+  // Generate brief
+  document.getElementById('generate-btn').addEventListener('click',()=>{
+    const source    =document.getElementById('r1-1').value.trim();
+    const targetReg =document.getElementById('r1-3').value.trim();
+    const noloss    =document.getElementById('r1-5').value.trim();
+    const trans     =document.getElementById('r2-3').value.trim()||document.getElementById('r2-1').value.trim();
+    const codesign  =document.getElementById('r2-2').value.trim();
+
+    const briefEl=document.getElementById('out-brief');
+    briefEl.innerHTML='';
+
+    function cell(cls,label,content){
+      if(!content) return;
+      const d=document.createElement('div');d.className='brief-cell '+cls;
+      const l=document.createElement('span');l.className='brief-cell-label';l.textContent=label;
+      d.appendChild(l);d.appendChild(document.createTextNode(content));
+      briefEl.appendChild(d);
+    }
+
+    cell('source-cell',     'Source concept',            source);
+    cell('target-cell',     'Target register',           targetReg);
+    cell('translation-cell','Translation',               trans||'No translation recorded yet.');
+    cell('noloss-cell',     'What must not be lost',     noloss);
+    cell('codesign-cell',   'Origin of the translation', codesign);
+
+    const critEl=document.getElementById('out-criteria');
+    critEl.innerHTML='';
+    const labels={accuracy:'Accuracy',dignity:'Dignity',recognition:'Recognition',actionability:'Actionability'};
+    crits.forEach(c=>{
+      const tag=document.createElement('span');
+      const v=verdicts[c];
+      tag.className='criterion-tag '+(v||'unrated');
+      tag.setAttribute('role','listitem');
+      tag.textContent=labels[c]+(v?' — '+v:' — not rated');
+      critEl.appendChild(tag);
+    });
+
+    function setText(id,val){document.getElementById(id).textContent=val||'No response recorded.';}
+    setText('out-codesign',  codesign);
+    setText('out-constraints',document.getElementById('r3-1').value.trim());
+    setText('out-remaining', document.getElementById('r3-2').value.trim());
+    setText('out-role',      document.getElementById('r3-3').value.trim());
+
+    const resultsEl=document.getElementById('results');
+    resultsEl.style.display='block';
+    resultsEl.scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(()=>resultsEl.focus(),400);
+  });
+
+  // Reset
+  document.getElementById('reset-btn').addEventListener('click',()=>{
+    if(!confirm('Clear all responses and start over?')) return;
+    textareas.forEach(t=>{t.value='';});
+    crits.forEach(c=>{
+      verdicts[c]=null;
+      document.querySelectorAll(`.verdict-btn[data-crit="${c}"]`).forEach(b=>{b.className='verdict-btn';b.setAttribute('aria-pressed','false');});
+      const n=document.getElementById('vn-'+c);if(n)n.textContent='';
+      const r=document.getElementById('cr-'+c);if(r)r.classList.remove('visible');
+    });
+    document.getElementById('results').style.display='none';
+    updateProgress();
+    window.scrollTo({behavior:'smooth',top:0});
+  });
+
+  // Print
+  document.getElementById('print-btn').addEventListener('click',()=>window.print());
+})();
+</script>
+
+</body>
+</html>
