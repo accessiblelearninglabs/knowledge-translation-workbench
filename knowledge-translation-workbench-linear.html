@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Knowledge Translation Workbench — Accessible Learning Labs</title>
+  <meta name="description" content="A structured workbench for translating clinical, institutional, or technical knowledge into language that is accurate, dignified, and recognisable to the person with lived experience. Screen reader and keyboard-optimised version." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand-text:   #303e44;
+      --brand-accent: #475f6a;
+      --white:        #ffffff;
+      --grey-1:       #f2f4f5;
+      --grey-2:       #dce2e5;
+      --grey-3:       #93a4ab;
+      --grey-4:       #5a6e75;
+      --border:       #dce2e5;
+      --font:         "Asap", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --max-w:        740px;
+      --side-pad:     2rem;
+
+      /* Criterion accent colours — AA-compliant on white */
+      --acc-fg:  #2e6b4f;
+      --acc-bg:  #eaf4ee;
+      --acc-bd:  #2e6b4f;
+      --dig-fg:  #2a4a58;
+      --dig-bg:  #e8eef0;
+      --dig-bd:  #3a5568;
+      --rec-fg:  #7a5c1e;
+      --rec-bg:  #fdf4e3;
+      --rec-bd:  #7a5c1e;
+      --act-fg:  #4a2e6b;
+      --act-bg:  #f0eaf4;
+      --act-bd:  #4a2e6b;
+    }
+
+    html { font-size: 18px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      color: var(--brand-text);
+      background: var(--white);
+      line-height: 1.75;
+    }
+
+    /* ── Skip links ─────────────────────────────────────────────── */
+    .skip-links { position: absolute; top: -200%; left: 0; width: 100%; z-index: 999; }
+    .skip-links a {
+      display: inline-block;
+      background: var(--brand-text);
+      color: var(--white);
+      padding: .5rem 1rem;
+      font-family: var(--font);
+      font-size: .85rem;
+      text-decoration: none;
+      margin-right: .5rem;
+    }
+    .skip-links:focus-within { top: 0; }
+    .skip-links a:focus { top: 0; }
+
+    /* ── Site header ────────────────────────────────────────────── */
+    .site-header {
+      border-bottom: 1px solid var(--border);
+      padding: 1.1rem var(--side-pad);
+      display: flex;
+      align-items: baseline;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .site-header a { font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; color: var(--grey-4); text-decoration: none; }
+    .site-header a:hover { color: var(--brand-text); }
+    .site-header .brand { color: var(--brand-text); font-weight: 700; }
+    .site-header .label { color: var(--grey-3); font-size: .72rem; }
+
+    /* ── Layout ─────────────────────────────────────────────────── */
+    .page-wrap { max-width: var(--max-w); margin: 0 auto; padding: 3rem var(--side-pad) 5rem; }
+
+    /* ── Page heading ────────────────────────────────────────────── */
+    .page-title { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; margin-bottom: .75rem; color: var(--brand-text); }
+    .page-subtitle { font-size: .93rem; color: var(--grey-4); line-height: 1.55; margin-bottom: 1.4rem; }
+    .tool-number { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--grey-3); display: block; margin-bottom: .5rem; }
+
+    /* ── Notice ──────────────────────────────────────────────────── */
+    .notice {
+      background: var(--grey-1);
+      border-left: 3px solid var(--brand-accent);
+      padding: .75rem 1rem;
+      font-size: .82rem;
+      color: var(--grey-4);
+      margin-bottom: 2rem;
+      line-height: 1.55;
+    }
+    .notice a { color: var(--brand-accent); }
+    .notice a:hover { color: var(--brand-text); }
+
+    /* ── Sensitivity note ────────────────────────────────────────── */
+    .sensitivity-note {
+      background: var(--grey-1);
+      border-left: 3px solid var(--grey-3);
+      padding: .75rem 1rem;
+      font-size: .85rem;
+      color: var(--grey-4);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* ── Table of contents ───────────────────────────────────────── */
+    nav#toc {
+      background: var(--grey-1);
+      padding: 1.3rem 1.5rem;
+      margin-bottom: 3rem;
+      border: 1px solid var(--grey-2);
+      border-radius: 3px;
+    }
+    nav#toc h2 { font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--brand-accent); margin-bottom: .8rem; }
+    nav#toc ol { margin-left: 1.2rem; font-size: .85rem; }
+    nav#toc li { margin-bottom: .3rem; }
+    nav#toc a { color: var(--brand-accent); text-decoration: none; }
+    nav#toc a:hover { color: var(--brand-text); text-decoration: underline; }
+
+    /* ── Sections ────────────────────────────────────────────────── */
+    .section-label { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--grey-3); margin-bottom: .3rem; display: block; }
+
+    article { margin-bottom: 4rem; }
+    article:not(:last-of-type) { padding-bottom: 3rem; border-bottom: 1px solid var(--grey-2); }
+
+    h2 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.015em; margin-top: 2.8rem; margin-bottom: 1rem; line-height: 1.2; color: var(--brand-text); }
+    h2:first-of-type { margin-top: 0; }
+    h3 { font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; margin-top: 2rem; margin-bottom: .6rem; color: var(--brand-accent); }
+    h4 { font-size: .95rem; font-weight: 700; margin-top: 1.4rem; margin-bottom: .5rem; color: var(--brand-text); }
+
+    p { margin-bottom: 1.1rem; }
+    ul, ol { margin: .6rem 0 1.1rem 1.4rem; }
+    li { margin-bottom: .45rem; }
+    a { color: var(--brand-accent); text-underline-offset: 3px; }
+    a:hover { color: var(--brand-text); }
+
+    /* ── Callout / pause block ───────────────────────────────────── */
+    .callout {
+      background: var(--grey-1);
+      border-left: 3px solid var(--brand-accent);
+      padding: 1.1rem 1.3rem;
+      margin: 1.8rem 0;
+      font-style: italic;
+      font-size: .93rem;
+      color: var(--grey-4);
+      line-height: 1.7;
+    }
+    .callout p:last-child { margin-bottom: 0; }
+    .callout strong { font-style: normal; color: var(--brand-text); }
+
+    /* ── Movement block ──────────────────────────────────────────── */
+    .movement {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    .movement-header {
+      background: var(--grey-1);
+      padding: .9rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .movement-tag { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--grey-3); display: block; margin-bottom: .2rem; }
+    .movement-title { font-size: 1.05rem; font-weight: 700; color: var(--brand-text); margin-bottom: .1rem; }
+    .movement-subtitle { font-size: .85rem; font-style: italic; color: var(--grey-4); }
+    .movement-body { padding: 1.2rem 1.4rem; }
+    .movement-body p { margin-bottom: .9rem; }
+    .movement-body p:last-child { margin-bottom: 0; }
+
+    /* ── Prompt ──────────────────────────────────────────────────── */
+    .prompt { border-top: 1px solid var(--grey-2); padding-top: 1.2rem; margin-top: 1.2rem; }
+    .prompt:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+    .prompt-num { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--grey-3); display: block; margin-bottom: .3rem; }
+    .prompt-q { font-size: .95rem; color: var(--brand-text); margin-bottom: .3rem; font-weight: 500; }
+    .prompt-note { font-size: .85rem; font-style: italic; color: var(--grey-4); line-height: 1.6; margin-bottom: 0; }
+
+    /* ── Criterion cards ─────────────────────────────────────────── */
+    .criterion {
+      border-radius: 4px;
+      border-width: 1px;
+      border-style: solid;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .criterion-name { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; display: block; margin-bottom: .2rem; font-weight: 700; }
+    .criterion-plain { font-size: .93rem; font-weight: 600; margin-bottom: .35rem; }
+    .criterion-def { font-size: .83rem; font-style: italic; line-height: 1.6; color: var(--grey-4); border-top: 1px solid rgba(0,0,0,0.08); padding-top: .4rem; margin-top: .4rem; margin-bottom: 0; }
+
+    .criterion.accuracy     { background: var(--acc-bg); border-color: var(--acc-bd); }
+    .criterion.accuracy     .criterion-name  { color: var(--acc-fg); }
+    .criterion.accuracy     .criterion-plain { color: var(--acc-fg); }
+    .criterion.dignity      { background: var(--dig-bg); border-color: var(--dig-bd); }
+    .criterion.dignity      .criterion-name  { color: var(--dig-fg); }
+    .criterion.dignity      .criterion-plain { color: var(--dig-fg); }
+    .criterion.recognition  { background: var(--rec-bg); border-color: var(--rec-bd); }
+    .criterion.recognition  .criterion-name  { color: var(--rec-fg); }
+    .criterion.recognition  .criterion-plain { color: var(--rec-fg); }
+    .criterion.actionability{ background: var(--act-bg); border-color: var(--act-bd); }
+    .criterion.actionability .criterion-name  { color: var(--act-fg); }
+    .criterion.actionability .criterion-plain { color: var(--act-fg); }
+
+    /* ── Worked example ──────────────────────────────────────────── */
+    .example-block {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin: 1.5rem 0 2rem;
+      overflow: hidden;
+    }
+    .example-header {
+      background: var(--brand-accent);
+      color: var(--white);
+      padding: .75rem 1.2rem;
+      font-size: .72rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .example-body { padding: 1.2rem 1.4rem; font-size: .88rem; line-height: 1.75; }
+    .example-body p { margin-bottom: .85rem; }
+    .example-body p:last-child { margin-bottom: 0; }
+    .example-sub { font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--grey-3); display: block; margin: 1.2rem 0 .4rem; }
+    .example-sub:first-child { margin-top: 0; }
+    .example-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: .5rem 0 1rem; }
+    .example-side { border-radius: 3px; padding: .85rem 1rem; font-size: .85rem; line-height: 1.6; }
+    .example-side-label { font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; display: block; margin-bottom: .35rem; }
+    .example-side.source     { background: #fbeaea; border-left: 3px solid #8b2a2a; }
+    .example-side.source     .example-side-label { color: #8b2a2a; }
+    .example-side.translated { background: var(--acc-bg); border-left: 3px solid var(--acc-bd); }
+    .example-side.translated .example-side-label { color: var(--acc-fg); }
+
+    /* ── Output fields ───────────────────────────────────────────── */
+    .output-section { margin-top: 1.5rem; }
+    .output-label { font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--brand-accent); display: block; margin-bottom: .5rem; }
+    .output-field {
+      width: 100%;
+      min-height: 120px;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: .7rem .9rem;
+      font-family: var(--font);
+      font-size: .88rem;
+      color: var(--brand-text);
+      background: var(--white);
+      resize: vertical;
+      line-height: 1.65;
+    }
+    .output-field:focus { outline: 2px solid var(--brand-accent); outline-offset: 2px; border-color: var(--brand-accent); }
+    .output-field::placeholder { color: var(--grey-2); }
+    .output-field.tall { min-height: 160px; }
+
+    /* ── Back to top ─────────────────────────────────────────────── */
+    .back-to-top {
+      display: inline-block;
+      font-size: .78rem;
+      color: var(--brand-accent);
+      text-decoration: none;
+      margin-top: 2rem;
+      padding: .35rem .7rem;
+      border: 1px solid var(--grey-2);
+      border-radius: 3px;
+    }
+    .back-to-top:hover { color: var(--brand-text); border-color: var(--brand-accent); }
+
+    /* ── References ──────────────────────────────────────────────── */
+    .references { margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid var(--grey-2); }
+    .references h2 { font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--brand-accent); margin-bottom: 1rem; margin-top: 0; }
+    .references ul { list-style: none; margin: 0; padding: 0; }
+    .references li { font-size: .82rem; color: var(--grey-4); margin-bottom: .9rem; padding-left: 1.1rem; border-left: 2px solid var(--brand-accent); line-height: 1.55; }
+
+    /* ── Footer ──────────────────────────────────────────────────── */
+    .site-footer { border-top: 1px solid var(--border); padding: 1.2rem var(--side-pad); font-size: .75rem; color: var(--grey-4); }
+    .site-footer a { color: var(--brand-accent); text-decoration: none; }
+    .site-footer a:hover { color: var(--brand-text); }
+    .site-footer p + p { margin-top: .5rem; }
+
+    @media (max-width: 600px) {
+      :root { --side-pad: 1.1rem; }
+      html { font-size: 16px; }
+      .example-comparison { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      .back-to-top, .site-header, .site-footer, .skip-links { display: none; }
+      .output-field { border: 1px solid #ccc; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="skip-links">
+  <a href="#main-content">Skip to main content</a>
+  <a href="#toc">Skip to table of contents</a>
+</div>
+
+<header class="site-header">
+  <a href="https://www.accessiblelearninglabs.com/" class="brand">Accessible Learning Labs</a>
+  <span class="label">Tool 02 — Linear Version</span>
+</header>
+
+<main class="page-wrap">
+
+  <span class="tool-number" id="main-content">Tool 02</span>
+  <h1 class="page-title">Knowledge Translation Workbench</h1>
+  <p class="page-subtitle">A structured workbench for translating clinical, institutional, or technical knowledge into language that is accurate, dignified, and recognisable to the person with lived experience.</p>
+
+  <div class="notice" role="note">
+    <strong>Screen reader and keyboard-optimised version.</strong> This is a fully linear, plain-structure version of this tool with no animations, JavaScript interactions, or visual-only content. All prompts and response fields are presented in reading order. An <a href="https://accessiblelearninglabs.github.io/knowledge-translation-workbench/">interactive version</a> with a rotating 3D tuning fork is also available. This page is derived from the case study <a href="https://www.accessiblelearninglabs.com/decisions-made-with-dignity-not-urgency"><em>Decisions Made with Dignity, Not Urgency</em></a>.
+  </div>
+
+  <div class="callout" role="note">
+    <p>Translation is not simplification. It is finding the frequency at which a truth held in one register resonates in another — without distortion, without condescension, without loss. This tool works best when you approach it as an act of genuine attention — to the concept, to the registers involved, and to the people whose lives it touches. Work slowly. The quality of the output depends entirely on the quality of the attention brought to it.</p>
+  </div>
+
+  <!-- Table of contents -->
+  <nav id="toc" aria-label="Table of contents">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#how-to-use">How to use this tool</a></li>
+      <li><a href="#worked-example">Worked example</a></li>
+      <li><a href="#m1">Movement 1 — Locate the concept</a></li>
+      <li><a href="#m2">Movement 2 — Test the translation</a>
+        <ol>
+          <li><a href="#criteria">The four criteria</a></li>
+          <li><a href="#codesign">Who was in the room</a></li>
+        </ol>
+      </li>
+      <li><a href="#m3">Movement 3 — Build the translation brief</a></li>
+      <li><a href="#brief-output">Your translation brief</a></li>
+      <li><a href="#references">Grounding and references</a></li>
+    </ol>
+  </nav>
+
+  <!-- ── How to use ─────────────────────────────────────────── -->
+  <article id="how-to-use">
+    <span class="section-label">About this tool</span>
+    <h2>How to use this tool</h2>
+
+    <p>Work through the three movements in order. Movement 1 locates the concept and the registers it must cross. Movement 2 tests a candidate translation against four criteria. Movement 3 produces a translation brief — a structured record of what was translated, how it was tested, and what must not be lost in any further adaptation.</p>
+    <p>The worked example below the table of contents is available as a reference throughout. It draws directly from the case study and shows the full workbench applied to one translation.</p>
+
+    <a href="#toc" class="back-to-top">↑ Back to contents</a>
+  </article>
+
+  <!-- ── Worked example ─────────────────────────────────────── -->
+  <article id="worked-example">
+    <span class="section-label">Worked example</span>
+    <h2>Worked example — from the case study</h2>
+
+    <div class="sensitivity-note" role="note">
+      This example involves dementia, grief, and the experience of watching someone you love change. If you are navigating this yourself, or have recently, you may find it resonant in ways that are not only professional. Take it at the pace that works for you.
+    </div>
+
+    <div class="example-block">
+      <div class="example-header">Full example — Knowledge Translation Workbench applied</div>
+      <div class="example-body">
+
+        <span class="example-sub">What the person is living</span>
+        <p>A family member living with dementia calls their daughter by a deceased grandmother's name. The daughter experiences this as painful — as evidence that her mother no longer knows who she is. This interpretation is common, and it closes something down in the relationship.</p>
+
+        <span class="example-sub">Movement 1 — Where the knowledge currently lives</span>
+        <p><strong>Source concept (clinical register):</strong> Confabulation — a failure of episodic memory producing incorrect name retrieval. The person cannot access the correct name and substitutes an earlier memory association.</p>
+        <p><strong>Source register:</strong> Clinical / neurological. Produced by medical professionals; assumed to be read by other medical professionals or informed carers.</p>
+        <p><strong>Target register:</strong> The register of grief and care. A daughter in the room with her mother, trying to understand what is happening and what it means for their relationship.</p>
+        <p><strong>What the crossing costs:</strong> When the clinical framing reaches the family without translation, it confirms the loss the daughter fears — her mother has forgotten her. The frame closes the relationship rather than opening it. It offers nothing to hold onto.</p>
+        <p><strong>What must not be lost:</strong> The neurological mechanism is real. The person's memory is changing. The translation must not deny that — it must carry it into a register where it can be understood without being only loss.</p>
+
+        <span class="example-sub">Movement 2 — The translation and how it was tested</span>
+        <p><strong>Origin:</strong> This reframe did not come from the facilitator or from clinical literature. It came from the community itself, in conversation during the program. The language belongs to the people who lived it.</p>
+
+        <div class="example-comparison">
+          <div class="example-side source">
+            <span class="example-side-label">Clinical register — what it says</span>
+            The person cannot retrieve the correct name and substitutes an earlier memory association. This is a symptom of episodic memory loss.
+          </div>
+          <div class="example-side translated">
+            <span class="example-side-label">Translation — what the community found</span>
+            The person is reaching for the closest approximation to a feeling of warmth and trust, and finding it in an earlier memory. To be called by that name is not to be forgotten. It is to be trusted.
+          </div>
+        </div>
+
+        <span class="example-sub">Criteria assessment</span>
+
+        <div class="criterion accuracy">
+          <span class="criterion-name">Accuracy — passes</span>
+          <p class="criterion-plain">The neurological mechanism is preserved.</p>
+          <p class="criterion-def">The translation does not deny the memory loss. It reframes what the mechanism means in relational terms without distorting the underlying fact.</p>
+        </div>
+
+        <div class="criterion dignity">
+          <span class="criterion-name">Dignity — passes</span>
+          <p class="criterion-plain">Both people are described with respect.</p>
+          <p class="criterion-def">The person living with dementia is reaching toward connection, not failing at recognition. The daughter is trusted, not forgotten. Neither is reduced.</p>
+        </div>
+
+        <div class="criterion recognition">
+          <span class="criterion-name">Recognition — passes</span>
+          <p class="criterion-plain">Participants confirmed this as true to their experience.</p>
+          <p class="criterion-def">The translation came from the community. The facilitator's role was to hold the space in which it emerged. It was confirmed by the people it describes.</p>
+        </div>
+
+        <div class="criterion actionability">
+          <span class="criterion-name">Actionability — passes</span>
+          <p class="criterion-plain">The translation opens what was closed.</p>
+          <p class="criterion-def">A daughter who understands this differently can respond differently. That changes what is possible in the relationship — which is exactly what the translation is for.</p>
+        </div>
+
+        <span class="example-sub">Movement 3 — Translation brief summary</span>
+        <p><strong>Constraints on further adaptation:</strong> Any adaptation must preserve the relational reframe — that the person is reaching toward warmth, not losing recognition. The mechanism (memory change) must not be denied. The language must not become clinical again.</p>
+        <p><strong>What remains to be tested:</strong> Whether the translation holds across different cultural relationships to grief and to memory. Whether it works in French and ASL as well as English.</p>
+        <p><strong>The facilitator's role:</strong> Minimal. The language came from participants. The facilitator held the space and recognised when something important had been named. The translation belongs to the community.</p>
+
+      </div>
+    </div>
+
+    <a href="#toc" class="back-to-top">↑ Back to contents</a>
+  </article>
+
+  <!-- ── Movement 1 ─────────────────────────────────────────── -->
+  <article id="m1">
+    <span class="section-label">Movement 1</span>
+    <h2>Locate the concept</h2>
+    <p><em>Whose knowledge is this, and whose does it need to reach?</em></p>
+
+    <p>The goal of this movement is to be explicit about where the concept currently lives — whose language it is in, how it got there, and what happens to people when it crosses into their lives without translation. A concept has a history. Understanding that history is the first act of translation.</p>
+
+    <div class="movement" aria-labelledby="m1-title">
+      <div class="movement-header">
+        <span class="movement-tag">Locating the concept</span>
+        <div class="movement-title" id="m1-title">Prompts 1.1 – 1.5</div>
+      </div>
+      <div class="movement-body">
+
+        <div class="prompt">
+          <span class="prompt-num">1.1 — The source concept</span>
+          <p class="prompt-q">State the concept you are working with, in its current form — the language it arrives in. Do not edit or improve it yet. Record it as it stands: the term, the definition, the framing currently in use.</p>
+          <p class="prompt-note">If it helps, write it as a direct quote from the source material — clinical documentation, policy language, institutional guidance, training content.</p>
+        </div>
+
+        <div class="output-section">
+          <label class="output-label" for="r1-1">The concept as it currently exists</label>
+          <textarea class="output-field" id="r1-1" name="r1-1" rows="4" placeholder="Write it down exactly as it comes, without editing…"></textarea>
+        </div>
+
+        <div class="prompt">
+          <span class="prompt-num">1.2 — The source register</span>
+          <p class="prompt-q">Whose register is this concept currently in? Name it specifically — clinical, legal, bureaucratic, academic, institutional, policy, professional. Who produced this language, and who is assumed to be reading it?</p>
+        </div>
+
+        <div class="output-section">
+          <label class="output-label" for="r1-2">The source register</label>
+          <textarea class="output-field" id="r1-2" name="r1-2" rows="4" placeholder="Write as specifically as you can…"></textarea>
+        </div>
+
+        <div class="prompt">
+          <span class="prompt-num">1.3 — The target register</span>
+          <p class="prompt-q">Whose register does this concept need to reach? Describe the person — not a demographic profile, but a person in a moment. What are they dealing with? What do they already understand? What relationship do they have to this concept — is it something happening to them, to someone they love, to their community?</p>
+          <p class="prompt-note">The target register is not simply "plain language." It may be the register of grief, of care, of practical action, of community knowledge. Name it with the same specificity you brought to 1.2.</p>
+        </div>
+
+        <div class="output-section">
+          <label class="output-label" for="r1-3">The target register</label>
+          <textarea class="output-field" id="r1-3" name="r1-3" rows="5" placeholder="Write as specifically as you can…"></textarea>
+        </div>
+
+        <div class="prompt">
+          <span class="prompt-num">1.4 — What the crossing costs</span>
+          <p class="prompt-q">What happens when this concept crosses from its source register into the lives of the people who need it — without translation? What is understood incorrectly? What is experienced as a closing rather than an opening? What does the person lose access to as a result?</p>
+          <p class="prompt-note">Be concrete. Vague descriptions of harm produce vague translations.</p>
+        </div>
+
+        <div class="output-section">
+          <label class="output-label" for="r1-4">What the crossing costs</label>
+          <textarea class="output-field" id="r1-4" name="r1-4" rows="5" placeholder="Write as specifically as you can…"></textarea>
+        </div>
+
+        <div class="prompt">
+          <span class="prompt-num">1.5 — What must not be lost</span>
+          <p class="prompt-q">What is the irreducible truth in this concept — the thing that must survive the translation intact, even if everything else changes? Name it plainly. This becomes the standard against which any translation you produce will be tested.</p>
+        </div>
+
+        <div class="output-section">
+          <label class="output-label" for="r1-5">What must not be lost</label>
+          <textarea class="output-field" id="r1-5" name="r1-5" rows="4" placeholder="State it as precisely as you can…"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="callout" role="note">
+      <p>Pause here. Read 1.4 and 1.5 together. The gap between what the untranslated concept costs and what the irreducible truth is — that gap is what your translation must bridge. Keep both in view as you move into Movement 2.</p>
+    </div>
+
+    <a href="#toc" class="back-to-top">↑ Back to contents</a>
+  </article>
+
+  <!-- ── Movement 2 ─────────────────────────────────────────── -->
+  <article id="m2">
+    <span class="section-label">Movement 2</span>
+    <h2>Test the translation</h2>
+    <p><em>Does this framing hold up to what it must do?</em></p>
+
+    <p>Produce a candidate translation, then test it against four criteria. A translation that meets fewer than all four is not a finished translation — it is a draft with known problems. The criteria are not a hierarchy; each must be met.</p>
+
+    <div class="movement" aria-labelledby="m2-cand-title">
+      <div class="movement-header">
+        <span class="movement-tag">Candidate translation</span>
+        <div class="movement-title" id="m2-cand-title">Prompt 2.1</div>
+      </div>
+      <div class="movement-body">
+        <div class="prompt">
+          <span class="prompt-num">2.1 — Candidate translation</span>
+          <p class="prompt-q">Write your first attempt at a translation. Express the concept in the target register you named in 1.3 — grounded in the felt experience, the practical situation, or the relational context of the person who needs it. Do not simplify. Translate.</p>
+          <p class="prompt-note">Aim for language that could have come from within the community itself — not language delivered to them, but language that reflects what they already know and name.</p>
+        </div>
+
+        <div class="output-section">
+          <label class="output-label" for="r2-1">Candidate translation</label>
+          <textarea class="output-field tall" id="r2-1" name="r2-1" rows="7" placeholder="Write your translation here…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" role="note">
+      <p>Before testing: read your candidate translation alongside what you wrote in 1.5 — what must not be lost. If the translation does not preserve that truth, revise it before testing the criteria. A translation that replaces the irreducible truth rather than carrying it is not a candidate — it is a different kind of distortion.</p>
+    </div>
+
+    <!-- The four criteria -->
+    <section id="criteria" aria-labelledby="criteria-heading">
+      <h3 id="criteria-heading">The four criteria</h3>
+      <p>Test the candidate against each criterion. For each: note whether it passes, partially passes, or fails, and record any revision required before the translation is confirmed.</p>
+
+      <div class="criterion accuracy">
+        <span class="criterion-name">Criterion 1 — Accuracy</span>
+        <p class="criterion-plain">Does the translation remain true?</p>
+        <p class="criterion-def">It preserves the factual and conceptual content of the source — not by reproducing the source register, but by carrying the same truth in different language. Nothing essential is omitted or softened.</p>
+      </div>
+
+      <div class="output-section">
+        <label class="output-label" for="r2-acc">Accuracy — verdict and any revision required</label>
+        <textarea class="output-field" id="r2-acc" name="r2-acc" rows="4" placeholder="Passes / Partial / Fails — and what revision is needed if not passing…"></textarea>
+      </div>
+
+      <div class="criterion dignity">
+        <span class="criterion-name">Criterion 2 — Dignity</span>
+        <p class="criterion-plain">Does the translation honour the person it describes?</p>
+        <p class="criterion-def">It treats the person's experience, capacity, and knowledge as worthy of respect — without euphemism, without condescension, without reduction. It does not explain the person to themselves.</p>
+      </div>
+
+      <div class="output-section">
+        <label class="output-label" for="r2-dig">Dignity — verdict and any revision required</label>
+        <textarea class="output-field" id="r2-dig" name="r2-dig" rows="4" placeholder="Passes / Partial / Fails — and what revision is needed if not passing…"></textarea>
+      </div>
+
+      <div class="criterion recognition">
+        <span class="criterion-name">Criterion 3 — Recognition</span>
+        <p class="criterion-plain">Would a person with lived experience see themselves in this?</p>
+        <p class="criterion-def">Not as a subject described, but as someone whose experience is understood. They would recognise this as true to what they know — not because it was explained to them, but because it came from the same place they live.</p>
+      </div>
+
+      <div class="output-section">
+        <label class="output-label" for="r2-rec">Recognition — verdict and any revision required</label>
+        <textarea class="output-field" id="r2-rec" name="r2-rec" rows="4" placeholder="Passes / Partial / Fails — and what revision is needed if not passing…"></textarea>
+      </div>
+
+      <div class="criterion actionability">
+        <span class="criterion-name">Criterion 4 — Actionability</span>
+        <p class="criterion-plain">Does the translation open rather than close what is possible?</p>
+        <p class="criterion-def">It gives the person access to knowledge they can act on — in their relationships, their decisions, their understanding of what is happening. It creates room for something to be different, rather than confirming that nothing can change.</p>
+      </div>
+
+      <div class="output-section">
+        <label class="output-label" for="r2-act">Actionability — verdict and any revision required</label>
+        <textarea class="output-field" id="r2-act" name="r2-act" rows="4" placeholder="Passes / Partial / Fails — and what revision is needed if not passing…"></textarea>
+      </div>
+    </section>
+
+    <!-- Co-design prompt -->
+    <section id="codesign" aria-labelledby="codesign-heading">
+      <h3 id="codesign-heading">Who was in the room</h3>
+
+      <p>The most durable translations emerge from within the community, not from above it. A translation produced without that input remains a hypothesis until it is tested with the people it is meant to serve. This is not a critique — it is an honest account of the translation's origin that determines how it should be held and how openly it should be offered for revision.</p>
+
+      <div class="output-section">
+        <label class="output-label" for="r2-codesign">Who was involved in producing this translation, and in what role?</label>
+        <textarea class="output-field" id="r2-codesign" name="r2-codesign" rows="5" placeholder="Name who was present and in what role — including whether people with lived experience of this concept were part of producing the translation…"></textarea>
+      </div>
+    </section>
+
+    <div class="movement" aria-labelledby="m2-rev-title">
+      <div class="movement-header">
+        <span class="movement-tag">Revised translation</span>
+        <div class="movement-title" id="m2-rev-title">Prompt 2.3</div>
+      </div>
+      <div class="movement-body">
+        <div class="prompt">
+          <span class="prompt-num">2.3 — Revised translation</span>
+          <p class="prompt-q">Having worked through the four criteria, write the revised translation. If the candidate passed all four without revision, write it again here as the confirmed translation. If revisions were required, incorporate them now.</p>
+        </div>
+
+        <div class="output-section">
+          <label class="output-label" for="r2-3">Revised or confirmed translation</label>
+          <textarea class="output-field tall" id="r2-3" name="r2-3" rows="7" placeholder="Write the revised or confirmed translation here…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <a href="#toc" class="back-to-top">↑ Back to contents</a>
+  </article>
+
+  <!-- ── Movement 3 ─────────────────────────────────────────── -->
+  <article id="m3">
+    <span class="section-label">Movement 3</span>
+    <h2>Build the translation brief</h2>
+    <p><em>A structured record for further use and adaptation.</em></p>
+
+    <p>The translation brief is the output of this workbench. It records what was translated, how it was tested, and what constraints must hold in any further adaptation. A translation brief is not a final text — it is a documented act of care that makes the work of others more reliable and more honest about its origins.</p>
+
+    <div class="movement" aria-labelledby="m3-title">
+      <div class="movement-header">
+        <span class="movement-tag">Translation brief</span>
+        <div class="movement-title" id="m3-title">Prompts 3.1 – 3.3</div>
+      </div>
+      <div class="movement-body">
+
+        <div class="prompt">
+          <span class="prompt-num">3.1 — Constraints on further adaptation</span>
+          <p class="prompt-q">This translation will be used by others — in different sessions, different contexts, different languages. What must any future adaptation preserve? State the constraints plainly: what can change, and what cannot, without the translation losing its integrity or misrepresenting its origins.</p>
+        </div>
+
+        <div class="output-section">
+          <label class="output-label" for="r3-1">Constraints on further adaptation</label>
+          <textarea class="output-field" id="r3-1" name="r3-1" rows="5" placeholder="Write as specifically as you can…"></textarea>
+        </div>
+
+        <div class="prompt">
+          <span class="prompt-num">3.2 — What remains to be tested</span>
+          <p class="prompt-q">Testing in the workbench is not the same as testing in the room. What would you need to observe or hear from people with lived experience to be confident this translation is doing what it is meant to do? What would tell you it needs revision?</p>
+        </div>
+
+        <div class="output-section">
+          <label class="output-label" for="r3-2">What remains to be tested</label>
+          <textarea class="output-field" id="r3-2" name="r3-2" rows="5" placeholder="Write as specifically as you can…"></textarea>
+        </div>
+
+        <div class="prompt">
+          <span class="prompt-num">3.3 — The facilitator's role in this translation</span>
+          <p class="prompt-q">The best facilitation leaves no trace of the facilitator. In this translation, how visible is your own hand? Where did you shape the language, and where did you step back to let the community's language lead? Name this honestly — it matters for how the translation is attributed and how confidently it should be offered for further use.</p>
+        </div>
+
+        <div class="output-section">
+          <label class="output-label" for="r3-3">The facilitator's role</label>
+          <textarea class="output-field" id="r3-3" name="r3-3" rows="5" placeholder="Write as specifically as you can…"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="callout" role="note">
+      <p>The translation brief you are about to complete belongs to the people whose knowledge produced it. If it came from within the community, that origin should be named in any context where it is shared. If it came from the facilitator, that too should be named — and held with appropriate tentativeness until the community has had the opportunity to confirm or revise it.</p>
+    </div>
+
+    <a href="#toc" class="back-to-top">↑ Back to contents</a>
+  </article>
+
+  <!-- ── Brief output ────────────────────────────────────────── -->
+  <article id="brief-output">
+    <span class="section-label">Output</span>
+    <h2>Your translation brief</h2>
+
+    <p>Use the fields below to compile your translation brief. This is the document you bring into the room, share with colleagues, and return to when the translation is adapted. It is an instrument, not a deliverable. A translation that cannot survive contact with lived experience is not yet finished.</p>
+
+    <h3>The translation</h3>
+
+    <div class="output-section">
+      <label class="output-label" for="brief-source">Source concept</label>
+      <textarea class="output-field" id="brief-source" name="brief-source" rows="3" placeholder="Copy from 1.1…"></textarea>
+    </div>
+
+    <div class="output-section">
+      <label class="output-label" for="brief-target">Target register</label>
+      <textarea class="output-field" id="brief-target" name="brief-target" rows="3" placeholder="Copy from 1.3…"></textarea>
+    </div>
+
+    <div class="output-section">
+      <label class="output-label" for="brief-translation">Confirmed translation</label>
+      <textarea class="output-field tall" id="brief-translation" name="brief-translation" rows="7" placeholder="Copy from 2.3…"></textarea>
+    </div>
+
+    <div class="output-section">
+      <label class="output-label" for="brief-noloss">What must not be lost in any further adaptation</label>
+      <textarea class="output-field" id="brief-noloss" name="brief-noloss" rows="3" placeholder="Copy from 1.5…"></textarea>
+    </div>
+
+    <h3>Criteria met</h3>
+
+    <div class="output-section">
+      <label class="output-label" for="brief-criteria">Accuracy / Dignity / Recognition / Actionability — verdict for each</label>
+      <textarea class="output-field" id="brief-criteria" name="brief-criteria" rows="5" placeholder="Note pass / partial / fail for each criterion, and any outstanding revisions…"></textarea>
+    </div>
+
+    <h3>Origin and constraints</h3>
+
+    <div class="output-section">
+      <label class="output-label" for="brief-origin">Who was in the room — origin of the translation</label>
+      <textarea class="output-field" id="brief-origin" name="brief-origin" rows="4" placeholder="Copy from 2.2…"></textarea>
+    </div>
+
+    <div class="output-section">
+      <label class="output-label" for="brief-constraints">Constraints on further adaptation</label>
+      <textarea class="output-field" id="brief-constraints" name="brief-constraints" rows="4" placeholder="Copy from 3.1…"></textarea>
+    </div>
+
+    <div class="output-section">
+      <label class="output-label" for="brief-remaining">What remains to be tested</label>
+      <textarea class="output-field" id="brief-remaining" name="brief-remaining" rows="4" placeholder="Copy from 3.2…"></textarea>
+    </div>
+
+    <div class="output-section">
+      <label class="output-label" for="brief-role">The facilitator's role in this translation</label>
+      <textarea class="output-field" id="brief-role" name="brief-role" rows="4" placeholder="Copy from 3.3…"></textarea>
+    </div>
+
+    <a href="#toc" class="back-to-top">↑ Back to contents</a>
+  </article>
+
+  <!-- ── References ─────────────────────────────────────────── -->
+  <div class="references" id="references" aria-label="Grounding and references">
+    <h2>Grounding and references</h2>
+    <ul>
+      <li>Lave, J., &amp; Wenger, E. (1991). <em>Situated Learning: Legitimate Peripheral Participation.</em> Cambridge University Press. Foundation for community-based knowledge translation and situated cognition.</li>
+      <li>Freire, P. (1970). <em>Pedagogy of the Oppressed.</em> Continuum. On knowledge, power, and the conditions under which community knowledge is honoured rather than displaced.</li>
+      <li>Cook-Sather, A., Bovill, C., &amp; Felten, P. (2014). <em>Engaging Students as Partners in Learning and Teaching.</em> Jossey-Bass. Framework for collaborative, reciprocal knowledge production — the foundation for the co-design prompt in Movement 2.</li>
+      <li>UNESCO IESALC. (2022). <em>Methodology for Transforming Higher Education.</em> UNESCO. Capacity-building framework emphasising participatory, evidence-based processes and community co-creation.</li>
+      <li>CAST. (Ongoing). <em>UDL Guidelines.</em> CAST.org. Universal Design for Learning as a framework for knowledge translation across learner variability.</li>
+      <li>Plain Language Action and Information Network. (Ongoing). <em>Federal Plain Language Guidelines.</em> plainlanguage.gov. Practical guidance for translating institutional and technical language into accessible registers.</li>
+      <li>Morgan, H., &amp; Houghton, A.-M. (2011). <em>Inclusive Curriculum Design in Higher Education.</em> The Higher Education Academy. Principles of anticipatory, flexible design relevant to knowledge translation across learner populations.</li>
+      <li>Wise, S. (2022). <em>Design for Belonging.</em> Stanford d.school / Ten Speed Press. On designing environments and materials that foster recognition and belonging — directly relevant to the recognition and dignity criteria.</li>
+    </ul>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <p>This tool was derived from the case study <a href="https://www.accessiblelearninglabs.com/decisions-made-with-dignity-not-urgency"><em>Decisions Made with Dignity, Not Urgency</em></a>. Designed and built by <a href="https://www.accessiblelearninglabs.com">Accessible Learning Labs</a>.</p>
+  <p>An <a href="https://accessiblelearninglabs.github.io/knowledge-translation-workbench/">interactive version</a> of this tool with a rotating 3D tuning fork is also available. <a href="https://accessiblelearninglabs.github.io/assumption-audit-linear/">Tool 01 — Assumption Audit (linear version)</a> is also available. If you encounter a barrier in either version, please <a href="https://www.accessiblelearninglabs.com/contact">get in touch</a>.</p>
+  <p><strong>Accessibility note:</strong> This version uses no JavaScript. All content is in reading order. Form fields are labelled with visible text. No information is conveyed through colour alone. WCAG 2.1 AA colour contrast is maintained throughout.</p>
+</footer>
+
+</body>
+</html>
